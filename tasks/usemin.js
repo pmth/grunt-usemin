@@ -35,7 +35,7 @@ var inspect = function (obj) {
 //       ... HTML Markup, list of script / link tags.
 //     <!-- endbuild -->
 //
-// - type: is either js or css.
+// - type: is either js or css or less.
 // - path: is the file path of the optimized file, the target output.
 //
 // An example of this in completed form can be seen below:
@@ -116,6 +116,7 @@ module.exports = function (grunt) {
     var files = grunt.file.expand({filter: 'isFile'}, this.data);
     var uglifyName = options.uglify || 'uglify';
     var cssminName = options.cssmin || 'cssmin';
+    var lessName = options.less || 'less';
     var dest = options.dest;
 
     // concat / uglify / cssmin / requirejs config
@@ -123,6 +124,7 @@ module.exports = function (grunt) {
     var uglify = grunt.config(uglifyName) || {};
     var cssmin = grunt.config(cssminName) || {};
     var requirejs = grunt.config('requirejs') || {};
+    var less = grunt.config(lessName) || {};
 
     grunt.log
       .writeln('Going through ' + grunt.log.wordlist(files) + ' to update the config')
@@ -214,6 +216,15 @@ module.exports = function (grunt) {
           cssmin[block.dest] = block.dest;
           grunt.config(cssminName, cssmin);
         }
+
+        // compile less
+        if (block.type === 'less') {
+          less[block.dest] = block.src;
+          grunt.config(lessName, less);
+          //also run cssmin
+          cssmin[block.dest] = block.dest;
+          grunt.config(cssminName, cssmin);
+        }
       });
     });
 
@@ -226,6 +237,8 @@ module.exports = function (grunt) {
       .subhead('  uglify:')
       .writeln('  ' + inspect(uglify))
       .subhead('  requirejs:')
-      .writeln('  ' + inspect(requirejs));
+      .writeln('  ' + inspect(requirejs))
+      .subhead('  less:')
+      .writeln('  ' + inspect(less));
   });
 };

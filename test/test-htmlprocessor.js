@@ -39,6 +39,20 @@ describe('htmlprocessor', function () {
     assert.equal('', hp.blocks[0].indent);
   });
 
+  it('should *not* include script tag for less', function () {
+    var htmlcontent = '<!-- build:less foo.css -->\n' +
+      '<link href="foo.less" rel="stylesheet/less">\n' +
+      '<link href="bar.less" rel="stylesheet/less">\n' +
+      '<script src="baz.js" type="text/javascript"></script>\n' +
+      '<!-- endbuild -->\n';
+    var hp = new HTMLProcessor('', '', htmlcontent, 3);
+    assert.equal(1, hp.blocks.length);
+    assert.equal('foo.css', hp.blocks[0].dest);
+    assert.equal(4, hp.blocks[0].raw.length);
+    assert.equal(2, hp.blocks[0].src.length);
+    assert.equal('', hp.blocks[0].indent);
+  });
+
   it('should return the correct indentation', function () {
     var htmlcontent = '  <!-- build:css foo.css -->\n' +
     '  <link rel="stylesheet" href="foo.css">\n' +
@@ -51,10 +65,11 @@ describe('htmlprocessor', function () {
     var filename = __dirname + '/fixtures/usemin.html';
     var htmlcontent =  grunt.file.read(filename);
     var hp = new HTMLProcessor(path.dirname(filename), '', htmlcontent, 3);
-    assert.equal(3, hp.blocks.length);
+    assert.equal(4, hp.blocks.length);
     var b1 = hp.blocks[0];
     var b2 = hp.blocks[1];
     var b3 = hp.blocks[2];
+    var b4 = hp.blocks[3];
     assert.equal(3, b1.raw.length);
     assert.equal('css', b1.type);
     assert.equal(1, b1.src.length);
@@ -64,6 +79,9 @@ describe('htmlprocessor', function () {
     assert.equal(3, b3.raw.length);
     assert.equal('js', b3.type);
     assert.equal(1, b3.src.length); // requirejs has been added also
+    assert.equal(4, b4.raw.length);
+    assert.equal('less', b4.type);
+    assert.equal(2, b4.src.length);
   });
 
   it('should also detect blocks that use alternate search dir', function () {
@@ -282,6 +300,17 @@ describe('htmlprocessor', function () {
       var hp = new HTMLProcessor('build', '', htmlcontent, 3);
       var replacestring = hp.replaceWith(hp.blocks[0]);
       assert.equal(replacestring, '<script src="foo.js"></script>');
+    });
+
+    it('should replace with less with css', function () {
+      var htmlcontent = '<!-- build:less foo.css -->\n' +
+        '<link href="foo.less" rel="stylesheet/less">\n' +
+        '<link href="bar.less" rel="stylesheet/less">\n' +
+        '<script src="baz.js" type="text/javascript"></script>\n' +
+        '<!-- endbuild -->\n';
+      var hp = new HTMLProcessor('build', '', htmlcontent, 3);
+      var replacestring = hp.replaceWith(hp.blocks[0]);
+      assert.equal(replacestring, '<link rel="stylesheet" href="foo.css">');
     });
   });
 

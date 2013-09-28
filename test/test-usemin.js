@@ -264,6 +264,12 @@ describe('usemin', function () {
       var uglify = grunt.config('uglify');
       assert.equal(uglify['scripts/amd-app.js'], 'scripts/amd-app.js');
       assert.equal(uglify['scripts/plugins.js'], 'scripts/plugins.js');
+
+      var less = grunt.config('less');
+      assert.ok(less['less.css']);
+      assert.equal(less['less.css'].length, 2);
+      assert.equal(less['less.css'][0], 'less1.less');
+      assert.equal(less['less.css'][1], 'less2.less');
     });
 
     it('should use alternate search dir if asked to', function () {
