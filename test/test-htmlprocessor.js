@@ -48,7 +48,7 @@ describe('htmlprocessor', function () {
     var hp = new HTMLProcessor('', '', htmlcontent, 3);
     assert.equal(1, hp.blocks.length);
     assert.equal('foo.css', hp.blocks[0].dest);
-    assert.equal(4, hp.blocks[0].raw.length);
+    assert.equal(5, hp.blocks[0].raw.length);
     assert.equal(2, hp.blocks[0].src.length);
     assert.equal('', hp.blocks[0].indent);
   });
@@ -79,7 +79,7 @@ describe('htmlprocessor', function () {
     assert.equal(3, b3.raw.length);
     assert.equal('js', b3.type);
     assert.equal(1, b3.src.length); // requirejs has been added also
-    assert.equal(4, b4.raw.length);
+    assert.equal(5, b4.raw.length);
     assert.equal('less', b4.type);
     assert.equal(2, b4.src.length);
   });
